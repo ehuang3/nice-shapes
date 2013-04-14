@@ -5,34 +5,31 @@
 // NOTE: To read from eth0, you need to run click with root
 //       access which requires installing click on root
 
-
-// our bandwidth measure can perhaps go here
-// we probably want to change the structure in the future
-// so that OurMeasure and OurShaper and communicate and we
-// probably want to use outside tools to measure bandwidth 
-elementclass OurMeasure {
-	input -> output
-}
-
-// our traffic shaper config should come here
-elementclass OurShaper {
-	input -> output
-}
-
-// this is for checking if packets are valid
-elementclass InitialChecks {
+// If the link speed falls below some arb. speed (currently 1Mbps)
+elementclass SlowShaper {
 	input 
-	-> Strip(14)
-	-> CheckIPHeader2
+	-> Print(slow)
 	-> output
 }
 
+//If the link speed is above some arb. speed (currently 1Mbps)
+elementclass FastShaper {
+	input 
+	-> Print(fast)
+	-> output
+}
+
+// Where we decide what to shape on
+elementclass ShapeDispatcher {
+rates :: BandwidthMeter(125kBps);
+	input -> rates
+	rates[0] -> SlowShaper -> output
+	rates[1] -> FastShaper -> output
+}
+
 // Our main pipe
-FromDevice(eth0) 
-	-> OurMeasure
-	-> OurShaper
-	-> InitialChecks
-	-> IPPrint(ok) // print input
+RatedSource(LENGTH 1500, BANDWIDTH 1500000, LIMIT 100, STOP yes)
+	-> ShapeDispatcher
 	-> Discard; // let's discard for now
 
 
