@@ -29,7 +29,7 @@ rates :: BandwidthMeter(125kBps);
 
 // Our main pipe
 //RatedSource(LENGTH 1500, BANDWIDTH 1500000, LIMIT 100, STOP yes)
-FromDevice(eth0)
+fromDevice(eth0)
 	-> ShapeDispatcher
 	-> Discard; // let's discard for now
 
