@@ -17,20 +17,27 @@ elementclass Shaper {
 	-> output
 }
 
+elementclass FTPClassifier {
+	ftps :: 
+	input
+	-> 	
+}
+
+
 // MAIN
-fromDevice(eth0) -> SplitByRate;
-SplitByRate[0] -> ToDevice;
-SplitByRate[1] -> Shaper -> Discard // for now
+// fromDevice(eth0) -> SplitByRate;
+// SplitByRate[0] -> ToDevice;
+// SplitByRate[1] -> Shaper -> Discard // for now
 
 
-//FromDevice(eth0)
+FromDevice(eth0)
 //	-> BandwidthMeter(125kbps)
 //	-> Strip(14)
 //	-> CheckIPHeader
-//	-> pro :: IPClassifier(tcp, udp, -);
+	-> pro :: IPClassifier(tcp, udp, -);
 
 // TCP
-//pro[0] -> portTCP :: IPClassifier(src tcp port 6346 or 4662 or 6699 or 6881 or 6889, -);
+pro[0] -> portTCP :: IPClassifier(src tcp port 6346 or 4662 or 6699 or 6881 or 6889, -);
 
 //portTCP[0] -> BandwidthShaper(125kbps) -> IPPrint -> Discard;
 //portTCP[1] -> Discard;
